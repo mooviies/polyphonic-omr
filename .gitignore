@@ -1,0 +1,5 @@
+/DoReMi_v1
+/outputs
+/experiment_code/baseline.pt
+/experiment_code/flagdecoder.pt
+/experiment_code/rnndecoder.pt

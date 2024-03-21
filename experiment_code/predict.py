@@ -100,6 +100,9 @@ for file_name in os.listdir(args.image):
 
     # POLYPHONIC DATASET IMAGES
     image = cv2.imread(img_name, cv2.IMREAD_UNCHANGED)
+    if image is None:
+        continue
+
     try:
         if image.shape[2] == 4:     # we have an alpha channel
             a1 = ~image[:,:,3]        # extract and invert that alpha

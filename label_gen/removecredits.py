@@ -22,7 +22,7 @@ def main():
 
     # Go through all files in input directory
     for file_name in os.listdir(args.input):
-     
+
         # Make sure file is .musicxml
         if not file_name.endswith('.musicxml'):
             continue
