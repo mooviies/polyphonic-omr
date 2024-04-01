@@ -294,3 +294,5 @@ note-Cb1
 note-B#7
 note-Gb0
 note-Ab0
+timeSignature-18/8
+timeSignature-8/16

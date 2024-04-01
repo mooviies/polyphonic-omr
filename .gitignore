@@ -3,3 +3,7 @@
 /experiment_code/baseline.pt
 /experiment_code/flagdecoder.pt
 /experiment_code/rnndecoder.pt
+/DoReMi/Dataset
+/experiment_code/__pycache__/*.pyc
+/label_gen/__pycache__/*.pyc
+/DoReMi

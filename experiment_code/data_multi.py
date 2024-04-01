@@ -29,7 +29,7 @@ class PolyphonicDataset(Dataset):
         self.params = params
 
         # Corpus
-        set_file = open(os.path.join(directory, set_fname), 'r')
+        set_file = open(os.path.join(directory, set_fname), 'r', encoding='utf-8')
         sample_list = set_file.read().splitlines()
         set_file.close()
         
@@ -114,10 +114,6 @@ class PolyphonicDataset(Dataset):
             hw_data = False
             sample_id = sample.split('-')[0]
             sample_num = sample.split('-')[1]
-            if sample_num.startswith('00'):
-                sample_num = sample_num[2:]
-            elif sample_num.startswith('0'):
-                sample_num = sample_num[1:]
             sample = sample_id + '-' + sample_num + '.semantic'
             
             # Label loading
@@ -152,7 +148,6 @@ class PolyphonicDataset(Dataset):
                 except IndexError and ValueError:
                     pass
 
-
                 # Append labels as a pair (note, length)
                 #print(sample_name)
                 #print(note_seq)
@@ -162,6 +157,7 @@ class PolyphonicDataset(Dataset):
                 #max_chord_stack = 10     # max number of notes at an instant
                 new_length_seq = [[] for i in range(max_chord_stack)]
                 new_pitch_seq = [[] for i in range(max_chord_stack)]
+
                 j = 0
                 while j < len(length_seq):
                     cur_sym_len = length_seq[j].split('_dup')[0]
@@ -247,6 +243,7 @@ class PolyphonicDataset(Dataset):
                 labels_note.append([self.note2idx[sym] for sym in note_seq])
 
             # Convert to batch if correct amount
+            #print (f"Images: {len(images)} | batch_size: {params['batch_size']}\n")
             if len(images) == params['batch_size']:
 
                 # Transform to batch

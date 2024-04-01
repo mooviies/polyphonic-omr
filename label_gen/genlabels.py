@@ -21,7 +21,22 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-input', dest='input', type=str, required='-c' not in sys.argv, help='Path to the input directory with MusicXMLs.')
     parser.add_argument('-output', dest='output', type=str, required=True, help='Path to the output directory to write sequences.')
+    parser.add_argument('-voc_p', dest='voc_p', type=str, required=True, help='Path to the pitch vocabulary file.')
+    parser.add_argument('-voc_r', dest='voc_r', type=str, required=False, help='Path to the rhythm vocabulary file.')
     args = parser.parse_args()
+
+    # Create output folders
+    length_dir = os.path.join(args.output, "labels_length")
+    note_dir = os.path.join(args.output, "labels_note")
+    os.makedirs(length_dir, exist_ok=True)
+    os.makedirs(note_dir, exist_ok=True)
+
+    # Read vocabulary
+    with open(args.voc_p, 'r') as file:
+        voc_p = [element.strip() for element in file.readlines()]
+
+    with open(args.voc_r, 'r') as file:
+        voc_r = [element.strip() for element in file.readlines()]
 
     #print('Input dir (MusicXMLs):', args.input)
     #print('Output dir (Sequences):', args.output)
@@ -38,8 +53,10 @@ if __name__ == '__main__':
 
         # Create a MusicXML object for generating sequences
         input_path = os.path.join(args.input, file_name)
-        output_path = os.path.join(args.output, ''.join(file_name.split('.')[:-1]) + '.semantic')
-        musicxml_obj = MusicXML(input_file=input_path, output_file=output_path)
+        new_file_name = ''.join(file_name.split('.')[:-1]) + '.semantic'
+        output_length = os.path.join(length_dir, new_file_name)
+        output_note = os.path.join(note_dir, new_file_name)
+        musicxml_obj = MusicXML(input_file=input_path, output_length=output_length, output_note=output_note, voc_p=voc_p, voc_r=voc_r)
 
         # Generate output sequence
         try:

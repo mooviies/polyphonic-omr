@@ -4,7 +4,9 @@ by parsing it
 """
 
 import sys
-import xml.etree.ElementTree as ET 
+import xml.etree.ElementTree as ET
+
+import regex
 
 from measure import Measure
 
@@ -12,7 +14,7 @@ import functools
 
 class MusicXML():
 
-    def __init__(self, input_file=None, output_file=None):
+    def __init__(self, input_file=None, output_length=None, output_note=None, voc_p=None, voc_r=None):
 
         """
         Stores MusicXML file passed in 
@@ -20,7 +22,10 @@ class MusicXML():
 
         # Input/output file path (.musicxml and .semantic)
         self.input_file = input_file
-        self.output_file = output_file
+        self.output_length = output_length
+        self.output_note = output_note
+        self.voc_p = voc_p
+        self.voc_r = voc_r
 
         # Set default values for key, clef, time signature
         self.key = ''
@@ -98,22 +103,71 @@ class MusicXML():
         sequences = self.get_sequences()
         file_num = 0
 
-        fname = self.output_file.split('.')[0]
+        length_fname = self.output_length.split('.')[0]
+        note_fname = self.output_note.split('.')[0]
+
+        # Compile regex pattern
+        pattern = regex.compile("(note-)([A-Za-z0-9#]+)_(.+)")
 
         # Write all of the ground truth sequences to files
         for seq in sequences:
-            break
             file_num += 1
 
             # Empty page, don't generate label file
             if seq == '':
                 continue
+
+            chords = [element.strip() for element in seq.split('+')]
+            note_chords = []
+            length_chords = []
+
+            for chord in chords:
+                notes = [element.strip() for element in chord.split()]
+                note_array = []
+                length_array = []
+
+                for note in notes:
+                    note_in_p = False
+                    note_in_r = False
+
+                    if note in self.voc_p:
+                        note_array.append(note)
+                        note_in_p = True
+
+                    if note in self.voc_r:
+                        length_array.append(note)
+                        note_in_r = True
+
+                    if note_in_p != note_in_r:
+                        print(f"Wrong format: {note}")
+                        exit(-1000)
+
+                    if note_in_p and note_in_r:
+                        continue
+
+                    match = pattern.search(note)
+                    if not match:
+                        print(f"Wrong format: {note}")
+                        exit(-1500)
+
+                    note_array.append(match.group(1) + match.group(2))
+                    length_array.append(match.group(1) + match.group(3))
+
+                note_chords.append(' '.join(note_array))
+                length_chords.append(' '.join(length_array))
             
             # Write the sequence to appropriately named file
-            with open(fname + '-' + str(file_num) + '.semantic', 'w') as out_file:
-
+            with open(note_fname + '-' + str(file_num) + '.semantic', 'w') as out_file:
+                note_seq = ' + '.join(note_chords)
                 out_file.write('')
-                out_file.write((seq + '\n'))
+                out_file.write((note_seq + '\n'))
+                out_file.write('')
+                out_file.close()
+
+            with open(length_fname + '-' + str(file_num) + '.semantic', 'w') as out_file:
+                length_seq = ' + '.join(length_chords)
+                out_file.write('')
+                out_file.write((length_seq + '\n'))
                 out_file.write('')
                 out_file.close()
                 
