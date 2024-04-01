@@ -67,6 +67,7 @@ model_num = 1
 # Function to save model
 def save_model():
     # Save model
+    os.makedirs('models', exist_ok=True)
     root_model_path = 'models/latest_model' + str(model_num) + '.pt'
     model_dict = nn_model.state_dict()
     state_dict = {'model': model_dict, 'optimizer': optimizer.state_dict()}

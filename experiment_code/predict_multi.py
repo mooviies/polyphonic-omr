@@ -175,7 +175,7 @@ for file_name in os.listdir(args.images):
             for k in range(params['batch_size']): # BATCH SIZE
                 img_idx = k
                 string_pred = ''
-                k = k * 10
+                k = k * max_chord_stack
                 for i in range(len(decoded_preds[k])):
                     for j in range(max_chord_stack):
                         if i < len(decoded_preds[k+j]) and decoded_preds[k+j][i] != 'noNote':

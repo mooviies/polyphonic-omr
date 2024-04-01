@@ -82,7 +82,6 @@ class PolyphonicDataset(Dataset):
 
         # Create batches while going through each
         for sample in sample_list:
-
             # Image preprocessing
             sample_name = img_dir + sample + '.png'
 
@@ -115,7 +114,6 @@ class PolyphonicDataset(Dataset):
             sample_id = sample.split('-')[0]
             sample_num = sample.split('-')[1]
             sample = sample_id + '-' + sample_num + '.semantic'
-            
             # Label loading
             if self.using_split_vocab:
                 # Read length labels
@@ -129,13 +127,12 @@ class PolyphonicDataset(Dataset):
 
                 # Read note labels
                 note_filepath = os.path.join(directory, note_labels_dir, sample) 
-                note_file = open(os.path.join(directory, note_filepath), 'r')
+                note_file = open(note_filepath, 'r')
                 if not hw_data: # Diff parsing of labels depending on dataset
                     note_seq = note_file.readline().rstrip().split()
                 else:
                     note_seq = [n.strip() for n in note_file.readlines()]
                 note_file.close()
-
                 # Remove whitespace from note/length sequences
                 try:
                     idx = note_seq.index('')
@@ -147,6 +144,8 @@ class PolyphonicDataset(Dataset):
                     del length_seq[idx]
                 except IndexError and ValueError:
                     pass
+                
+                
 
                 # Append labels as a pair (note, length)
                 #print(sample_name)
@@ -157,7 +156,6 @@ class PolyphonicDataset(Dataset):
                 #max_chord_stack = 10     # max number of notes at an instant
                 new_length_seq = [[] for i in range(max_chord_stack)]
                 new_pitch_seq = [[] for i in range(max_chord_stack)]
-
                 j = 0
                 while j < len(length_seq):
                     cur_sym_len = length_seq[j].split('_dup')[0]
@@ -203,7 +201,6 @@ class PolyphonicDataset(Dataset):
                             new_length_seq[k].append('noNote')
                             new_pitch_seq[k].append('noNote')
                             k += 1
-
                 try:
                     labels_note.append([[self.note2idx[sym] for sym in pitch_seq] for pitch_seq in new_pitch_seq])
                 except KeyError:
@@ -241,9 +238,8 @@ class PolyphonicDataset(Dataset):
 
                 # Append label
                 labels_note.append([self.note2idx[sym] for sym in note_seq])
-
+            
             # Convert to batch if correct amount
-            #print (f"Images: {len(images)} | batch_size: {params['batch_size']}\n")
             if len(images) == params['batch_size']:
 
                 # Transform to batch
