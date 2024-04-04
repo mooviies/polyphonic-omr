@@ -24,7 +24,7 @@ parser.add_argument('-list', dest='list', type=str, default=False, help='Directo
 args = parser.parse_args()
 
 # Params used in train_multi.py
-max_chord_stack = 10
+max_chord_stack = 4
 
 # Read the pitch vocabulary and create dictionary
 dict_file = open(args.voc_p,'r')
@@ -183,6 +183,7 @@ for file_name in os.listdir(args.images):
                     string_pred += '+' + ' '
                 string_pred = string_pred[:-2] # Remove last '+' char and space from prediction
                 output_file = os.path.join(args.out_dir, img_names[img_idx].split('.')[0] + '.semantic')
+                os.makedirs(args.out_dir, exist_ok=True)
                 write_output(string_pred, output_file) 
 
                     

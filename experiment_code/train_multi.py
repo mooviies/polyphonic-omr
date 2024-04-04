@@ -15,8 +15,8 @@ from data_multi import PolyphonicDataset
 torch.cuda.empty_cache()
 
 # Hyperparams
-max_epochs = 3500
-max_chord_stack = 10
+max_epochs = 20
+max_chord_stack = 4
 learning_rate = 1e-4
 
 # Setup GPU stuff
