@@ -401,10 +401,6 @@ class RNNDecoder_v3(torch.nn.Module):
         # For classifiers
         self.hidden_size = 512//2
 
-        # Split embedding layers (CRNN + hidden(|V|) -> vocab size), +1 for blank
-        self.note_emb = nn.Linear(2 * rnn_hidden_units + 2*self.hidden_size, self.num_notes + 1)     
-        self.length_emb = nn.Linear(2 * rnn_hidden_units + 2*self.hidden_size, self.num_lengths + 1)
-
         self.note_emb_b = nn.Linear(2 * rnn_hidden_units + self.hidden_size, self.num_notes + 1)     
         self.length_emb_b = nn.Linear(2 * rnn_hidden_units + self.hidden_size, self.num_lengths + 1)
 
