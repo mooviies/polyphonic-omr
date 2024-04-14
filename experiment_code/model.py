@@ -229,7 +229,7 @@ class RNNDecoder_v2(torch.nn.Module):
     # RNNDecoder model - Combination rythm + pitch hidden state
 
     def __init__(self, params, num_notes, num_lengths, max_chord_stack):
-        super(RNNDecoder, self).__init__()
+        super(RNNDecoder_v2, self).__init__()
 
         self.params = params
         self.width_reduction = 1
@@ -348,7 +348,7 @@ class RNNDecoder_v3(torch.nn.Module):
     # RNNDecoder model - bi-directional
 
     def __init__(self, params, num_notes, num_lengths, max_chord_stack):
-        super(RNNDecoder, self).__init__()
+        super(RNNDecoder_v3, self).__init__()
 
         self.params = params
         self.width_reduction = 1
@@ -505,7 +505,7 @@ class RNNDecoder_v4(torch.nn.Module):
     # RNNDecoder model - use last predict sample to predict the next one
 
     def __init__(self, params, num_notes, num_lengths, max_chord_stack):
-        super(RNNDecoder, self).__init__()
+        super(RNNDecoder_v4, self).__init__()
 
         self.params = params
         self.width_reduction = 1
