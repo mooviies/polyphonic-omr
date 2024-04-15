@@ -7,3 +7,4 @@
 /experiment_code/__pycache__/*.pyc
 /label_gen/__pycache__/*.pyc
 /DoReMi
+/experiment_code/__pycache__
