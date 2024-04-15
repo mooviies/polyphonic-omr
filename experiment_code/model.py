@@ -227,6 +227,12 @@ class RNNDecoder(torch.nn.Module):
 
 class RNNDecoder_v2(torch.nn.Module):
     # RNNDecoder model - Combination rythm + pitch hidden state
+    """
+    Version modifiée du RNNDecoder des auteurs de l'article.
+
+    À chaque décodage, les vecteurs cachés du rythme et du pitch sont concaténés 
+    pour la prédiction du pitch et du rythme suivant. La mise à jour reste indépendante.
+    """
 
     def __init__(self, params, num_notes, num_lengths, max_chord_stack):
         super(RNNDecoder_v2, self).__init__()
@@ -330,9 +336,15 @@ class RNNDecoder_v2(torch.nn.Module):
         note_outs = []
         length_outs = []
         for _ in range(self.max_chord_stack):
-            # Concat hidden state with encoder output and make prediction
+            #=================================================================
+            #================= modification principale =======================
+
+            # Concat hidden state of pitch and rythm with encoder output and make prediction
             note_out = self.note_emb(torch.cat((rnn_out, prev_pred_note,prev_pred_length), 2))
             length_out = self.length_emb(torch.cat((rnn_out, prev_pred_length,prev_pred_note), 2))
+            
+            #=================================================================
+            #=================================================================
 
             # Update hidden state (nonlinearity for scaling outputs -1 to 1)
             prev_pred_note = torch.tanh(self.lin_note_i(note_out) + self.lin_note_h(prev_pred_note))
@@ -346,6 +358,12 @@ class RNNDecoder_v2(torch.nn.Module):
 
 class RNNDecoder_v3(torch.nn.Module):
     # RNNDecoder model - bi-directional
+    """
+    Version modifiée du RNNDecoder des auteurs de l'article.
+
+    Le decodage est aussi fait dans l'autre sens. A noter que les vecteurs cachés du décodage dans le sens inverse
+    est initialisé avec les vecteurs caché obtenue après le décodage initial.
+    """
 
     def __init__(self, params, num_notes, num_lengths, max_chord_stack):
         super(RNNDecoder_v3, self).__init__()
@@ -446,6 +464,9 @@ class RNNDecoder_v3(torch.nn.Module):
         # Recurrent block
         rnn_out, _ = self.r1(features)
 
+        #=================================================================
+        #================= modification principale =======================
+
         # Initial hidden (aka prev pred)
 
         prev_pred_note_f = torch.zeros((rnn_out.shape[0], rnn_out.shape[1], self.hidden_size)).cuda()
@@ -461,8 +482,9 @@ class RNNDecoder_v3(torch.nn.Module):
         note_outs_emb_f = []
         length_outs_emb_b = []
         length_outs_emb_f = []
-        rnn_out_b=torch.flip(rnn_out, [1])
+        rnn_out_b=torch.flip(rnn_out, [1]) #Pour l'entrée du décodage dans le sens inverse
 
+        # Décodage dans le sens initial
         for _ in range(self.max_chord_stack):
             #prev_pred_note=torch.cat((prev_pred_note_f, prev_pred_note_b), 2)
 
@@ -476,7 +498,8 @@ class RNNDecoder_v3(torch.nn.Module):
             # Update hidden state (nonlinearity for scaling outputs -1 to 1)
             prev_pred_note_f = torch.tanh(self.lin_note_i(note_out_f) + self.lin_note_h(prev_pred_note_f))
             prev_pred_length_f = torch.tanh(self.lin_len_i(length_out_f) + self.lin_len_h(prev_pred_length_f))
-            
+
+        #Décodage dans le sens inverse    
         prev_pred_note_b=prev_pred_note_f
         prev_pred_length_b=prev_pred_note_f
         for _ in range(self.max_chord_stack):
@@ -492,13 +515,17 @@ class RNNDecoder_v3(torch.nn.Module):
             prev_pred_note_b = torch.tanh(self.lin_note_i(note_out_b) + self.lin_note_h(prev_pred_note_b))
             prev_pred_length_b = torch.tanh(self.lin_len_i(length_out_b) + self.lin_len_h(prev_pred_length_b))
         
+        #Détermination des prédictions finales
         note_outs_emb_b.reverse()
         length_outs_emb_b.reverse()
         for i in range(self.max_chord_stack):
-            note_out=torch.add(note_outs_emb_b[i],note_outs_emb_f[i])/2#torch.maximum(note_outs_emb_b[i],note_outs_emb_f[i])
-            length_out=torch.add(length_outs_emb_b[i],length_outs_emb_f[i])/2#torch.maximum(length_outs_emb_b[i],length_outs_emb_f[i])
+            note_out=torch.add(note_outs_emb_b[i],note_outs_emb_f[i])/2 # moyenne des prédictions de 2 décodages
+            length_out=torch.add(length_outs_emb_b[i],length_outs_emb_f[i])/2 # moyenne des prédictions de 2 décodages
             note_outs.append(self.sm(note_out))
             length_outs.append(self.sm(length_out))
+
+        #=================================================================
+        #=================================================================
         return note_outs, length_outs
     
 class RNNDecoder_v4(torch.nn.Module):
@@ -572,7 +599,6 @@ class RNNDecoder_v4(torch.nn.Module):
         # Log Softmax at end for CTC Loss (dim = vocab dimension)
         self.sm = nn.LogSoftmax(dim=2)
 
-
         self.first_pred=True
         self.last_forward_note_pred = None
         self.last_forward_length_pred = None
@@ -602,10 +628,13 @@ class RNNDecoder_v4(torch.nn.Module):
         rnn_out, _ = self.r1(features)
 
         # Initial hidden (aka prev pred)
-
         prev_pred_note = torch.zeros((rnn_out.shape[0], rnn_out.shape[1], self.hidden_size)).cuda()
         prev_pred_length = torch.zeros((rnn_out.shape[0], rnn_out.shape[1], self.hidden_size)).cuda()
-        if self.first_pred:
+        #=================================================================
+        #================= modification principale =======================
+
+        if self.first_pred: 
+            # Si c'est la première prédiction du batch, on réinitialise les vecteurs cachés de la séquence précédente
             self.first_pred = False
             self.last_forward_note_pred = torch.zeros((rnn_out.shape[0], rnn_out.shape[1], self.hidden_size)).cuda()
             self.last_forward_length_pred = torch.zeros((rnn_out.shape[0], rnn_out.shape[1], self.hidden_size)).cuda()
@@ -616,7 +645,7 @@ class RNNDecoder_v4(torch.nn.Module):
         note_outs = []
         length_outs = []
         for _ in range(self.max_chord_stack):
-            # Concat hidden state with encoder output and make prediction
+            # Concat previous and current hidden state with encoder output and make prediction
             note_out = self.note_emb(torch.cat((rnn_out, prev_pred_note,self.last_forward_note_pred), 2))
             length_out = self.length_emb(torch.cat((rnn_out, prev_pred_length,self.last_forward_length_pred), 2))
 
@@ -630,8 +659,11 @@ class RNNDecoder_v4(torch.nn.Module):
         self.last_forward_note_pred=prev_pred_note
         self.last_forward_length_pred=prev_pred_length
         return note_outs, length_outs
-    def reset_pred(self):
+    
+    def reset_pred(self):#Pour réinitialisé les vecteurs caché après un bacth de séquence
         self.first_pred = True
+    #=================================================================
+    #=================================================================
   
 class FlagDecoder(torch.nn.Module):
     # FlagDecoder model
