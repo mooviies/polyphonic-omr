@@ -16,7 +16,7 @@ Dataset/
         
 # Label Generation
 
-## Requis
+## Requirements
 1. Install MuseScore 3 : https://musescore.org/en/download (MuseScore 4 won't work, see the links for older version at the bottom of the page)
 2. Copy folder from the folder (label_gen/musescore_plugins) in MuseScore's Plugin folder : https://musescore.org/en/handbook/3/plugins
 3. Make sure the plugins are activated in the menu Plugins/Plugin Manager of MuseScore
@@ -37,3 +37,22 @@ Warning     : Running "Batch Convert" on a folder will delete the original files
 9. Create the corpus using the created images and finialized labels
 10. Run the script fix_labels.ps1 (Which needs to be at the root of the corpus) to fix label names.
 
+# Model Training
+
+## Requirements
+1. Have a valid Corpus
+
+## Pipeline
+The model will be in a folder named model. A model is saved for each epoch.
+
+1. Run (train_multi.py -voc_p "PathToProject\experiment_code\vocab\rnn_pitch.txt" -voc_r "PathToProject\experiment_code\vocab\rnn_rhythm.txt" -corpus "DatasetFolder")
+
+# Prediction
+
+## Requirements
+1. Have a valid model
+
+## Pipeline
+
+1. Generate the Pitch prediction with (predict_multi.py -p -images "TestImagesFolder" -model "ModelsFolder/model_name.pt" -voc_p "PathToProject\experiment_code\vocab\rnn_pitch.txt" -voc_r "PathToProject\experiment_code\vocab\rnn_rhythm.txt" -out "PitchPredictionFolder)
+2. Generate the Rhythm prediction with (predict_multi.py -images "TestImagesFolder" -model "ModelsFolder/model_name.pt" -voc_p "PathToProject\experiment_code\vocab\rnn_pitch.txt" -voc_r "PathToProject\experiment_code\vocab\rnn_rhythm.txt" -out "PitchPredictionFolder)
