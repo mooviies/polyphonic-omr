@@ -296,3 +296,17 @@ note-Gb0
 note-Ab0
 timeSignature-18/8
 timeSignature-8/16
+rest-1024th
+rest-512th
+multirest-60
+multirest-38
+multirest-40
+multirest-22
+multirest-29
+multirest-11
+multirest-112
+multirest-21
+timeSignature-32/4
+rest-sixty_fourth.
+rest-breve.
+timeSignature-14/4

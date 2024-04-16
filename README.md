@@ -1,4 +1,7 @@
-﻿# Corpus
+﻿# Final Model (Trained on FaSolLa)
+https://drive.google.com/file/d/1EZS7JcPvDdNSfBWdQs0B705uzMJTLkTd/view?usp=sharing
+
+# Corpus
 Folder hierarchy of the corpus user in the training
 
 Dataset/
