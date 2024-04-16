@@ -1,6 +1,9 @@
 ﻿# Final Model (Trained on FaSolLa)
 https://drive.google.com/file/d/1EZS7JcPvDdNSfBWdQs0B705uzMJTLkTd/view?usp=sharing
 
+# Test images from FaSolLa
+https://drive.google.com/file/d/1948a6Cnv5U_6Y9VmYdDHQFKTeovrx5uM/view?usp=sharing
+
 # Corpus
 Folder hierarchy of the corpus user in the training
 
