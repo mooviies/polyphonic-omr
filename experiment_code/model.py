@@ -167,16 +167,17 @@ class RNNDecoder(torch.nn.Module):
         # Log Softmax at end for CTC Loss (dim = vocab dimension)
         self.sm = nn.LogSoftmax(dim=2)
 
-        self.pitch_classifier = torch.nn.Sequential(
-            torch.nn.Linear(rnn_hidden_units*2+self.hidden_size,self.pitch_vocab_size+1), #+1 pour prendren en compte l'absence de note, *2 car ltsm bidirectionnel (concaténation des 2 output)
-            torch.nn.Softmax(dim=2)
-        )
-        self.rythm_classifier = torch.nn.Sequential(
-            torch.nn.Linear(rnn_hidden_units*2+self.hidden_size,self.rythm_vocab_size+1), #+1 pour prendren en compte l'absence de note
-            torch.nn.Softmax(dim=2)
-        )
-        self.pitch_hidden_state = torch.nn.RNN(rnn_hidden_units*2,self.hidden_size)
-        self.rythm_hidden_state = torch.nn.RNN(rnn_hidden_units*2,self.hidden_size)
+        # TODO PE
+        #self.pitch_classifier = torch.nn.Sequential(
+        #    torch.nn.Linear(rnn_hidden_units*2+self.hidden_size,self.pitch_vocab_size+1), #+1 pour prendren en compte l'absence de note, *2 car ltsm bidirectionnel (concaténation des 2 output)
+        #    torch.nn.Softmax(dim=2)
+        #)
+        #self.rythm_classifier = torch.nn.Sequential(
+        #    torch.nn.Linear(rnn_hidden_units*2+self.hidden_size,self.rythm_vocab_size+1), #+1 pour prendren en compte l'absence de note
+        #    torch.nn.Softmax(dim=2)
+        #)
+        #self.pitch_hidden_state = torch.nn.RNN(rnn_hidden_units*2,self.hidden_size)
+        #self.rythm_hidden_state = torch.nn.RNN(rnn_hidden_units*2,self.hidden_size)
 
         print('Vocab size:', num_lengths + num_notes)
 
