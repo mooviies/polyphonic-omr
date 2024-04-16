@@ -33,13 +33,13 @@ Warning     : Running "Batch Convert" on a folder will delete the original files
 
 0. (Optionnal) If your starting files are .musicxml : Run "Batch Convert Orig" in MuseScore on all .musicxml files to .mscz
 1. Run "Batch Convert Resize Height" in MuseScore on all .mscz files to .musicxml
-2. Run (removecredits.py -input "MusicXMLFolder") on the generated .musicxml files
+2. Run `removecredits.py -input "MusicXMLFolder"` on the generated .musicxml files
 3. Run "Batch Convert Orig" in MuseScore on the cleaned .musicxml files to .mscz
 4. Run "Batch Convert Orig" in MuseScore on the new .mscz to .musicxml and .png
-5. Run (removetitleimgs.py -input "ImageFolder") on the images (Essentially removes the first sample of each partition to remove the title image)
-6. Run (genlabels.py -input "MusicXMLFolder" -output "LabelsFolder" -voc_p "PathToProject\experiment_code\vocab\rnn_pitch.txt" -voc_r "PathToProject\experiment_code\vocab\rnn_rhythm.txt") to generate labels for the .musicxml files
-7. Run (removesparsesamples.py -input "ImageAndAnySemanticFolder") to remove samples containing only rests
-8. Run (removenolabeldata.py -labels "AnySemanticFolder" -imgs "ImageFolder") to samples that don't have labels
+5. Run `removetitleimgs.py -input "ImageFolder"` on the images (Essentially removes the first sample of each partition to remove the title image)
+6. Run `genlabels.py -input "MusicXMLFolder" -output "LabelsFolder" -voc_p "PathToProject\experiment_code\vocab\rnn_pitch.txt" -voc_r "PathToProject\experiment_code\vocab\rnn_rhythm.txt"` to generate labels for the .musicxml files
+7. Run `removesparsesamples.py -input "ImageAndAnySemanticFolder"` to remove samples containing only rests
+8. Run `removenolabeldata.py -labels "AnySemanticFolder" -imgs "ImageFolder"` to samples that don't have labels
 9. Create the corpus using the created images and finialized labels
 10. Run the script fix_labels.ps1 (Which needs to be at the root of the corpus) to fix label names.
 
@@ -51,7 +51,7 @@ Warning     : Running "Batch Convert" on a folder will delete the original files
 ## Pipeline
 The model will be in a folder named model. A model is saved for each epoch.
 
-1. Run (train_multi.py -voc_p "PathToProject\experiment_code\vocab\rnn_pitch.txt" -voc_r "PathToProject\experiment_code\vocab\rnn_rhythm.txt" -corpus "DatasetFolder")
+1. Run `train_multi.py -voc_p "PathToProject\experiment_code\vocab\rnn_pitch.txt" -voc_r "PathToProject\experiment_code\vocab\rnn_rhythm.txt" -corpus "DatasetFolder"`
 
 # Prediction
 
@@ -60,5 +60,5 @@ The model will be in a folder named model. A model is saved for each epoch.
 
 ## Pipeline
 
-1. Generate the Pitch prediction with (predict_multi.py -p -images "TestImagesFolder" -model "ModelsFolder/model_name.pt" -voc_p "PathToProject\experiment_code\vocab\rnn_pitch.txt" -voc_r "PathToProject\experiment_code\vocab\rnn_rhythm.txt" -out "PitchPredictionFolder)
-2. Generate the Rhythm prediction with (predict_multi.py -images "TestImagesFolder" -model "ModelsFolder/model_name.pt" -voc_p "PathToProject\experiment_code\vocab\rnn_pitch.txt" -voc_r "PathToProject\experiment_code\vocab\rnn_rhythm.txt" -out "PitchPredictionFolder)
+1. Generate the Pitch prediction with `predict_multi.py -p -images "TestImagesFolder" -model "ModelsFolder/model_name.pt" -voc_p "PathToProject\experiment_code\vocab\rnn_pitch.txt" -voc_r "PathToProject\experiment_code\vocab\rnn_rhythm.txt" -out "PitchPredictionFolder`
+2. Generate the Rhythm prediction with `predict_multi.py -images "TestImagesFolder" -model "ModelsFolder/model_name.pt" -voc_p "PathToProject\experiment_code\vocab\rnn_pitch.txt" -voc_r "PathToProject\experiment_code\vocab\rnn_rhythm.txt" -out "PitchPredictionFolder`
