@@ -21,6 +21,7 @@ parser.add_argument('-voc_r', dest='voc_r', type=str, required=True, help='Path 
 parser.add_argument('-p', dest='p', action="store_true", default=False, help='Indicate if outputting rhythm or pitch prediction sequence (false = rhythm)')
 parser.add_argument('-out', dest='out_dir', type=str, default='-d' in sys.argv, help='Directory to output predictions to')
 parser.add_argument('-list', dest='list', type=str, default=False, help='Directory to list of files to check from directory')
+parser.add_argument('-RNN_Decoder_version', dest='RNN_decoder_version', type=int, default=1, help='Version of the RNNDecoder')
 args = parser.parse_args()
 
 # Params used in train_multi.py
@@ -58,11 +59,19 @@ if args.list:
 params = model.default_model_params()
 
 # Create model
-nn_model = model.RNNDecoder(params, len(pitch_int2word), len(length_int2word), max_chord_stack)
+if args.RNN_decoder_version==2:
+    nn_model = model.RNNDecoder_v2(params, len(pitch_int2word), len(length_int2word), max_chord_stack)
+elif args.RNN_decoder_version==3:
+    nn_model = model.RNNDecoder_v3(params, len(pitch_int2word), len(length_int2word), max_chord_stack)
+elif args.RNN_decoder_version==4:
+    nn_model = model.RNNDecoder_v3(params, len(pitch_int2word), len(length_int2word), max_chord_stack)
+else:
+    nn_model = model.RNNDecoder(params, len(pitch_int2word), len(length_int2word), max_chord_stack)
 nn_model.to(device)
 
 # Restore model
 state_dict = torch.load(args.model)
+print(state_dict["model"].keys())
 nn_model.load_state_dict(state_dict['model'])
 
 nn_model.eval()
@@ -148,6 +157,8 @@ for file_name in os.listdir(args.images):
    
         with torch.no_grad():
 
+            if args.RNN_decoder_version==4:
+                nn_model.reset_pred()
             # Forward pass
             pitch_outs, length_outs = nn_model(batch_images.to(device))
             out_lengths = torch.cat((max_chord_stack*[lengths]), 1)
