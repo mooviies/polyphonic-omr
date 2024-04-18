@@ -59,3 +59,12 @@ The model will be in a folder named model. A model is saved for each epoch.
 
 1. Generate the Pitch prediction with `predict_multi.py -p -images "TestImagesFolder" -model "ModelsFolder/model_name.pt" -voc_p "PathToProject\experiment_code\vocab\rnn_pitch.txt" -voc_r "PathToProject\experiment_code\vocab\rnn_rhythm.txt" -out "PitchPredictionFolder"`
 2. Generate the Rhythm prediction with `predict_multi.py -images "TestImagesFolder" -model "ModelsFolder/model_name.pt" -voc_p "PathToProject\experiment_code\vocab\rnn_pitch.txt" -voc_r "PathToProject\experiment_code\vocab\rnn_rhythm.txt" -out "RhythmPredictionFolder"`
+
+# Music XML Generation from labels
+
+## Requirements
+1. Have predictions for rhythms and pitch
+
+# Pipeline
+
+1. Generate the Music XML with `generate_music_xml.py -notes "PathToPredictionFolder\pitch" -rhythms "PathToPredictionFolder\rhythm" -output "PathToMusicXMLFolder"`
